@@ -1,9 +1,13 @@
 :root {
-  --bg: #0f172a;
-  --panel: #111827;
+  --bg: #0b0d11;
+  --panel: #050505;
   --text: #e5e7eb;
   --muted: #94a3b8;
   --brand: #22d3ee;
+}
+
+h2 {
+  font-size: 20px;
 }
 
 body {
@@ -20,7 +24,7 @@ body {
 }
 
 .side-desk {
-  width: 300px;
+  width: 420px;
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -28,7 +32,7 @@ body {
 
 .controls,
 .info {
-  background: #0b1220aa;
+  background: #080A0D;
   border: 1px solid #333;
   border-radius: 12px;
   padding: 14px;
@@ -50,7 +54,7 @@ select {
 .card {
   flex: 1;
   max-width: 900px;
-  background: #111827dd;
+  background: #080A0D;
   border: 1px solid #333;
   border-radius: 18px;
   box-shadow: 0 10px 30px #0006;
@@ -63,7 +67,7 @@ select {
 
 h1 {
   margin: 0;
-  font-size: 22px;
+  font-size: 28px;
 }
 
 p.sub {
@@ -76,7 +80,7 @@ p.sub {
   margin: 20px 0;
   border: 2px dashed #22d3ee66;
   border-radius: 14px;
-  padding: 56px;
+  padding: 80px;
   text-align: center;
   cursor: pointer;
   transition: .2s;

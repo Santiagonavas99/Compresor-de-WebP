@@ -1,4 +1,35 @@
 (async function () {
+  // -------------------------------------------------------------
+  // 🔹 Soporte para pegar imágenes desde el portapapeles
+  // -------------------------------------------------------------
+  document.addEventListener('paste', async (e) => {
+    if (!e.clipboardData) return;
+    const items = e.clipboardData.items;
+    let found = false;
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      if (item.kind === 'file' && item.type === 'image/webp') {
+        const file = item.getAsFile();
+        if (file) {
+          handleFiles([file]);
+          found = true;
+        }
+      }
+    }
+    // Si no encontró webp, pero hay imagen genérica, también la acepta
+    if (!found) {
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        if (item.kind === 'file' && item.type.startsWith('image/')) {
+          const file = item.getAsFile();
+          if (file) {
+            handleFiles([file]);
+            break;
+          }
+        }
+      }
+    }
+  });
   // 🔹 Referencias a elementos
   const fileInput = document.getElementById('file');
   const drop = document.getElementById('drop');
