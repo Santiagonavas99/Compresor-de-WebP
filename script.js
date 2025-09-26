@@ -1,7 +1,7 @@
-window.addEventListener("DOMContentLoaded", () => {
-  // Referencias a elementos
-  const urlInput = document.getElementById("urlInput");
-  const btnUrlImport = document.getElementById("btnUrlImport");
+(async function () {
+  // -------------------------------------------------------------
+  // 🔹 Referencias a elementos
+  // -------------------------------------------------------------
   const fileInput = document.getElementById("file");
   const drop = document.getElementById("drop");
   const btnCompress = document.getElementById("btnCompress");
@@ -20,14 +20,20 @@ window.addEventListener("DOMContentLoaded", () => {
   const globalGain = document.getElementById("globalGain");
   const live = document.getElementById("live");
   const toast = document.getElementById("toast");
+  const urlInput = document.getElementById("urlInput");
+  const btnUrlImport = document.getElementById("btnUrlImport");
 
-  // Estado global
+  // -------------------------------------------------------------
+  // 🔹 Variables globales
+  // -------------------------------------------------------------
   let files = [];
   let outputs = [];
   let metas = [];
 
-  // Utils
-  const human = (n) => {
+  // -------------------------------------------------------------
+  // 🔹 Helpers
+  // -------------------------------------------------------------
+  function human(n) {
     const u = ["B", "KB", "MB", "GB"];
     let i = 0,
       x = n;
@@ -40,9 +46,11 @@ window.addEventListener("DOMContentLoaded", () => {
       " " +
       u[i]
     );
-  };
+  }
 
-  const cssId = (name) => name.replace(/[^a-z0-9]/gi, "_");
+  function cssId(name) {
+    return name.replace(/[^a-z0-9]/gi, "_");
+  }
 
   function resize(img, w, h) {
     let iw = img.width,
@@ -80,69 +88,7 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 
   // -------------------------------------------------------------
-  // Importar por URL (con proxy opcional para CORS)
-  // -------------------------------------------------------------
-  if (btnUrlImport && urlInput) {
-    btnUrlImport.addEventListener("click", async () => {
-      const url = urlInput.value.trim();
-      if (!url) return;
-
-      btnUrlImport.disabled = true;
-      btnUrlImport.textContent = "Cargando...";
-
-      try {
-        console.log("🌐 Intentando importar:", url);
-
-        // proxy opcional para evitar CORS
-        const proxy = "https://api.allorigins.win/raw?url=";
-        const res = await fetch(proxy + encodeURIComponent(url));
-        if (!res.ok) throw new Error("No se pudo descargar la imagen");
-
-        const ct = res.headers.get("content-type") || "";
-        if (!ct.startsWith("image/"))
-          throw new Error("La URL no es una imagen");
-
-        const blob = await res.blob();
-        let name = url.split("/").pop().split("?")[0] || "imagen";
-        if (!/\.(jpg|jpeg|png|webp)$/i.test(name)) {
-          const ext = (ct.split("/")[1] || "png").split(";")[0];
-          name += "." + ext;
-        }
-
-        const file = new File([blob], name, { type: blob.type });
-        handleFiles([file], true); // 👈 append = true
-        urlInput.value = "";
-        toastMsg("Imagen importada desde URL");
-      } catch (e) {
-        console.error("❌ Error al importar por URL:", e);
-        alert("Error al importar: " + (e.message || e));
-      }
-
-      btnUrlImport.disabled = false;
-      btnUrlImport.textContent = "Importar por URL";
-    });
-  }
-
-  // -------------------------------------------------------------
-  // Pegar desde portapapeles (múltiples imágenes)
-  // -------------------------------------------------------------
-  document.addEventListener("paste", (e) => {
-    if (!e.clipboardData) return;
-    const list = [];
-    for (const item of e.clipboardData.items) {
-      if (item.kind === "file" && item.type.startsWith("image/")) {
-        const f = item.getAsFile();
-        if (f) list.push(f);
-      }
-    }
-    if (list.length) {
-      handleFiles(list, true); // 👈 append
-      toastMsg("Imagen(es) pegada(s) desde portapapeles");
-    }
-  });
-
-  // -------------------------------------------------------------
-  // Calidad y presets
+  // 🔹 Actualizar calidad y presets
   // -------------------------------------------------------------
   function updateQualityLabel() {
     const val = parseFloat(q.value);
@@ -151,52 +97,37 @@ window.addEventListener("DOMContentLoaded", () => {
   updateQualityLabel();
   q.addEventListener("input", updateQualityLabel);
 
-  if (preset) {
-    preset.addEventListener("change", () => {
-      if (preset.value === "visual") {
-        q.value = 0.95;
-        maxW.value = 0;
-        maxH.value = 0;
-      } else if (preset.value === "ecom") {
-        q.value = 0.85;
-        maxW.value = 1600;
-        maxH.value = 0;
-      } else if (preset.value === "max") {
-        q.value = 0.7;
-        maxW.value = 1200;
-        maxH.value = 0;
-      }
-      updateQualityLabel();
-    });
-  }
+  preset.addEventListener("change", () => {
+    if (preset.value === "visual") {
+      q.value = 0.95;
+      maxW.value = 0;
+      maxH.value = 0;
+    } else if (preset.value === "ecom") {
+      q.value = 0.85;
+      maxW.value = 1600;
+      maxH.value = 0;
+    } else if (preset.value === "max") {
+      q.value = 0.7;
+      maxW.value = 1200;
+      maxH.value = 0;
+    }
+    updateQualityLabel();
+  });
 
   // -------------------------------------------------------------
-  // Manejo de archivos
+  // 🔹 Manejo de archivos (replace o append)
   // -------------------------------------------------------------
-  drop.addEventListener("click", () => fileInput.click());
-  drop.addEventListener("dragover", (e) => {
-    e.preventDefault();
-    drop.classList.add("drag");
-  });
-  drop.addEventListener("dragleave", () => drop.classList.remove("drag"));
-  drop.addEventListener("drop", (e) => {
-    e.preventDefault();
-    drop.classList.remove("drag");
-    handleFiles(e.dataTransfer.files, true);
-  });
-  fileInput.addEventListener("change", () => handleFiles(fileInput.files, true));
-
   function handleFiles(list, append = false) {
     if (!append) {
-      files = [...list];
+      files = [];
       preview.innerHTML = "";
       outputs = [];
       metas = [];
-    } else {
-      files = [...files, ...list];
     }
+    files = [...files, ...list];
 
-    list.forEach((f) => {
+    files.forEach((f) => {
+      if (document.querySelector(`[data-name="${f.name}"]`)) return;
       const url = URL.createObjectURL(f);
       const div = document.createElement("div");
       div.className = "panel";
@@ -217,8 +148,68 @@ window.addEventListener("DOMContentLoaded", () => {
     btnCompress.disabled = files.length === 0;
   }
 
+  // Drag & drop (replace)
+  drop.addEventListener("click", () => fileInput.click());
+  drop.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    drop.classList.add("drag");
+  });
+  drop.addEventListener("dragleave", () => drop.classList.remove("drag"));
+  drop.addEventListener("drop", (e) => {
+    e.preventDefault();
+    drop.classList.remove("drag");
+    handleFiles(e.dataTransfer.files, false);
+  });
+
+  // File input (replace)
+  fileInput.addEventListener("change", () => handleFiles(fileInput.files, false));
+
+  // Portapapeles (append)
+  document.addEventListener("paste", (e) => {
+    if (!e.clipboardData) return;
+    const list = [];
+    for (const item of e.clipboardData.items) {
+      if (item.kind === "file" && item.type.startsWith("image/")) {
+        const f = item.getAsFile();
+        if (f) list.push(f);
+      }
+    }
+    if (list.length) {
+      handleFiles(list, true);
+      toastMsg("Imagen pegada desde portapapeles");
+    }
+  });
+
+  // Importar por URL (append)
+  if (btnUrlImport && urlInput) {
+    btnUrlImport.addEventListener("click", async () => {
+      const url = urlInput.value.trim();
+      if (!url) return;
+      btnUrlImport.disabled = true;
+      btnUrlImport.textContent = "Cargando...";
+      try {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error("No se pudo descargar la imagen");
+        const blob = await res.blob();
+        let name = url.split("/").pop().split("?")[0] || "imagen";
+        if (!/\.(jpg|jpeg|png|webp)$/i.test(name)) {
+          const ext = (blob.type.split("/")[1] || "png").split(";")[0];
+          name += "." + ext;
+        }
+        const file = new File([blob], name, { type: blob.type });
+        handleFiles([file], true);
+        urlInput.value = "";
+        toastMsg("Imagen importada desde URL");
+      } catch (e) {
+        alert("Error al importar: " + (e.message || e));
+      }
+      btnUrlImport.disabled = false;
+      btnUrlImport.textContent = "Importar por URL";
+    });
+  }
+
   // -------------------------------------------------------------
-  // Compresión
+  // 🔹 Compresión
   // -------------------------------------------------------------
   async function compress() {
     outputs = [];
@@ -230,18 +221,13 @@ window.addEventListener("DOMContentLoaded", () => {
     btnCompress.disabled = true;
     btnDownload.disabled = true;
 
-    const format = outputFormat.value; // ej. image/webp
+    const format = outputFormat.value;
     let ext = format.split("/")[1];
     if (ext === "jpeg") ext = "jpg";
 
     for (const f of files) {
       const img = await createImageBitmap(f);
-      const c = resize(
-        img,
-        parseInt(maxW.value) || 0,
-        parseInt(maxH.value) || 0
-      );
-
+      const c = resize(img, parseInt(maxW.value) || 0, parseInt(maxH.value) || 0);
       const blob = await new Promise((res) =>
         c.toBlob(res, format, parseFloat(q.value))
       );
@@ -255,20 +241,15 @@ window.addEventListener("DOMContentLoaded", () => {
       const outEl = document.getElementById("out-" + cssId(f.name));
       const saveEl = document.getElementById("save-" + cssId(f.name));
       const dlBtn = document.getElementById("dl-" + cssId(f.name));
-
       if (outEl) outEl.lastElementChild.textContent = human(blob.size);
       if (saveEl) saveEl.lastElementChild.textContent = `${saved.toFixed(1)}%`;
-
       if (dlBtn) {
         dlBtn.disabled = false;
         dlBtn.onclick = () => {
           const a = document.createElement("a");
           a.href = URL.createObjectURL(blob);
           a.download = outName;
-          document.body.appendChild(a);
           a.click();
-          document.body.removeChild(a);
-          URL.revokeObjectURL(a.href);
         };
       }
 
@@ -286,7 +267,7 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 
   // -------------------------------------------------------------
-  // Eventos botones
+  // 🔹 Eventos botones
   // -------------------------------------------------------------
   btnCompress.addEventListener("click", async () => {
     const prev = btnCompress.textContent;
@@ -326,7 +307,7 @@ window.addEventListener("DOMContentLoaded", () => {
   });
 
   // -------------------------------------------------------------
-  // Mensaje dinámico del formato
+  // 🔹 Nota formato
   // -------------------------------------------------------------
   function updateFormatNote() {
     const fmt = outputFormat.value.split("/")[1].toUpperCase();
@@ -334,9 +315,8 @@ window.addEventListener("DOMContentLoaded", () => {
       formatNote.textContent = `Se exportará como ${fmt}. Cada vez que cambies el formato debes volver a presionar Comprimir.`;
     btnCompress.textContent = `Comprimir a ${fmt}`;
   }
-
   if (outputFormat) {
     updateFormatNote();
     outputFormat.addEventListener("change", updateFormatNote);
   }
-});
+})();
