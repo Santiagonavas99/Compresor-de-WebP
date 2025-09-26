@@ -76,6 +76,7 @@ p.sub {
   font-size: 14px;
 }
 
+
 .drop {
   margin: 20px 0;
   border: 2px dashed #22d3ee66;
@@ -84,6 +85,38 @@ p.sub {
   text-align: center;
   cursor: pointer;
   transition: .2s;
+}
+
+.import-url {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.import-url input[type="text"] {
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #333;
+  background: #181c22;
+  color: #e5e7eb;
+  font-size: 14px;
+}
+
+.import-url button {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid #22d3ee66;
+  background: #06111a;
+  color: #e5e7eb;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background .2s;
+}
+.import-url button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .drop.drag {
@@ -229,4 +262,105 @@ img {
   font-weight: bold;
   color: #22d3ee;
   font-size: 13px;
+}
+
+.note {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #22d3ee;
+  line-height: 1.4;
+}
+
+.import-url {
+  margin: 30 12px;
+  display: flex;
+  gap: 10px;
+}
+
+.import-url input {
+  flex: 1;
+  padding: 20px 12px;
+  border-radius: 12px;
+  border: 1px solid #333;
+  background: #0b1220;
+  color: var(--text);
+  font-size: 13px;
+}
+
+.import-url button {
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid #22d3ee66;
+  background: #06111a;
+  color: var(--text);
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.import-url button:hover {
+  background: #0ea5e9;
+  color: #fff;
+}
+
+/* 📱 Layout móvil */
+@media (max-width: 768px) {
+  body {
+    flex-direction: column; /* Apila todo en una columna */
+    padding: 10px;
+  }
+
+  .side-desk {
+    width: 100%;           /* Que ocupe todo el ancho */
+    max-width: 100%;
+  }
+
+  .card {
+    width: 100%;           /* Igual full width */
+    max-width: 100%;
+    margin-top: 20px;      /* Espacio entre el sidebar y la card */
+  }
+
+  .drop {
+    padding: 32px;         /* Menos alto en móvil */
+  }
+
+  .url-import {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .url-import input,
+  .url-import button {
+    width: 100%;
+  }
+
+  .preview {
+    grid-template-columns: 1fr; /* Una sola columna de previews */
+  }
+}
+
+.output {
+  margin: 0px;
+  background: #0b1220aa;
+  border: 1px solid #22d3ee55;
+  border-radius: 12px;
+  padding: 14px;
+  font-size: 13px;
+  color: #e5e7eb;
+}
+
+.output h2 {
+  margin: 0 0 10px;
+  font-size: 15px;
+  color: #22d3ee;
+}
+
+.output select {
+  width: 100%;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #333;
+  background: #0b1220;
+  color: #e5e7eb;
 }

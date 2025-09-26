@@ -5,15 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Compresor WEBP Santiago Navas🦇</title>
   <link rel="stylesheet" href="style.css">
-  <script src="script.js"></script>
 </head>
 <body>
   <!-- Side Desk con controles e info -->
   <aside class="side-desk">
-
-  <div class="info">
-   <h2>¿Qué significa la calidad 0.1 – 1?</h2>
-   <p>El valor controla el nivel de compresión de la imagen en formato WEBP:</p>
+    <div class="info">
+      <h2>¿Qué significa la calidad 0.1 – 1?</h2>
+      <p>El valor controla el nivel de compresión de la imagen:</p>
       <ul>
         <li><strong>1.0</strong>: Calidad máxima, archivo más pesado.</li>
         <li><strong>0.9 – 0.8</strong>: Muy alta, casi sin pérdida visible.</li>
@@ -44,16 +42,33 @@
         <input id="maxH" type="number" min="0" value="0" />
       </label>
     </div>
+
+    <!-- Formato de salida -->
+    <div class="output">
+      <h2>Formato de salida</h2>
+      <select id="outputFormat">
+        <option value="image/webp">WEBP</option>
+        <option value="image/jpeg">JPEG</option>
+        <option value="image/png">PNG</option>
+      </select>
+      <p id="formatNote" class="note">Se exportará como WEBP.</p>
+    </div>
   </aside>
 
   <div class="card">
-    <h1>Compresor de imágenes WEBP</h1>
+    <h1>Compresor de imágenes</h1>
     <p class="sub">Arrastra y suelta múltiples imágenes, ajusta la calidad o usa un modo rápido. Descarga todo comprimido o cada archivo individual.</p>
 
     <label class="drop" id="drop">
       <input id="file" type="file" accept="image/*" multiple />
       <strong>Arrastra tus imágenes aquí</strong> o haz clic para seleccionar.
     </label>
+
+    <!-- Importar por URL -->
+    <div class="import-url">
+      <input id="urlInput" type="text" placeholder="Pega la URL de una imagen (jpg, png, webp...)" style="width:70%" />
+      <button id="btnUrlImport" type="button">Importar por URL</button>
+    </div>
 
     <div class="btns">
       <button id="btnCompress" class="primary" disabled>Comprimir a WEBP</button>
@@ -73,7 +88,6 @@
     <div id="toast" class="toast" role="status" aria-live="polite">Listo</div>
 
     <div class="foot">Consejo: prueba los modos rápidos para no tener que ajustar parámetros cada vez.</div>
-
     <div class="message">
       🎄 <strong>Cualquier comentario, mejora o idea</strong> para este compresor, <br>
       me avisan por Discord. <br>
