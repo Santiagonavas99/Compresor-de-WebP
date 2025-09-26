@@ -364,3 +364,30 @@ img {
   background: #0b1220;
   color: #e5e7eb;
 }
+
+/* Footer sticky */
+
+.message {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;                     
+  background: rgba(11, 18, 32, 0.8);
+  padding: 16px;
+  text-align: center;              
+  font-size: 14px;
+  line-height: 1.5;
+  z-index: 1000;  
+  border-radius: 0px;                 
+  border-color: #0b1220ee;
+  backdrop-filter: blur(8px);
+}
+
+.message strong {
+  color: #fff;
+}
+
+body {
+  padding-bottom: 100px; /* espacio para que el contenido no quede tapado */
+}
